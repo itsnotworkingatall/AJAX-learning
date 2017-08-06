@@ -81,7 +81,7 @@ if (isset($_POST['updatethis'])) {
 
             $.post("process.php", {id: id, title: title, updatethis: updatethis}, function(data){
 
-//                alert(data);
+                $("#feedback").text("Record updated successfully")
 
             });
 
