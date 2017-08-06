@@ -23,6 +23,7 @@ if (isset($_POST['id'])) {
         $carId = $row['id'];
 
     ?>
+        <p id="feedback" class="bg-success"></p>
         <div><strong>Edit "<?php echo $carName?>"</strong></div>
             <br>
             <input type="text" rel="<?php echo $carId?>" class="form-control car-title-input" value="<?php echo $carName?>">
@@ -30,6 +31,7 @@ if (isset($_POST['id'])) {
         <div>
             <input type="button" value="Update" class="btn btn-success update">
             <input type="button" value="Delete" class="btn btn-danger delete">
+            <button type="button" value="Close" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         </div>
     <?php
 
@@ -53,9 +55,21 @@ if (isset($_POST['updatethis'])) {
 
 }
 
+/*** updating action box data ***/
+
+if (isset($_POST['deletethis'])) {
+
+    $carID = $_POST['id'];
+
+    $carID = mysqli_real_escape_string(connectToDB(), $carID);
+
+    $query = "DELETE FROM cars WHERE id = {$carID} ";
+
+    $deleteCar = queryToDB($query);
+
+}
 
 ?>
-
 
 <script>
 
@@ -81,11 +95,39 @@ if (isset($_POST['updatethis'])) {
 
             $.post("process.php", {id: id, title: title, updatethis: updatethis}, function(data){
 
-                $("#feedback").text("Record updated successfully")
+                $("#feedback").text("Record updated successfully");
+                //$("#action-container").hide();
 
             });
 
         });
+
+        /*** delete button function ***/
+
+        $(".delete").on('click', function(){
+
+            if(confirm('Really delete this?')) {
+
+                id = $(".car-title-input").attr('rel');
+
+                $.post("process.php", {id: id, title: title, deletethis: deletethis}, function(data){
+
+                    $("#feedback").text("Record deleted successfully");
+                    $("#action-container").hide();
+
+                });
+            }
+
+        });
+
+        /*** Close button functon ***/
+
+        $(".close").on('click', function(){
+
+            $("#action-container").hide();
+
+        });
+
 
 
 
