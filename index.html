@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ajax index file</title>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+
+</head>
+<body>
+
+    <script>
+
+        $(document).ready(function() {
+
+/******************* Update Cars Table every 5 seconds ************************/
+
+            setInterval(function(){
+
+                updateCars();
+
+            }, 5000);
+
+
+
+            function updateCars() {
+                $.ajax({
+
+                    url: 'display_cars.php',
+                    type: 'POST',
+                    success: function(show_cars){
+                        if(!show_cars.error) {
+                            $("#show-cars").html(show_cars);
+                        }
+                    }
+
+                });
+
+            }
+
+            $('#search').keyup(function() {
+
+                var search = $('#search').val();
+
+                $.ajax({
+
+                    url:'search.php',
+                    data:{search:search},
+                    type: 'POST',
+                    success:function(data){
+
+                        if(!data.error) {
+
+                            $('#result').html(data);
+
+                        }
+                    }
+
+                });
+
+            });
+
+            //adding cars to db
+
+            $("#add-car-form").submit(function(evt) {
+
+                evt.preventDefault();
+
+                var postData = $(this).serialize();
+                var url = $(this).attr('action');
+                $.post(url, postData, function(php_table_data) {
+
+                //$("#car-result").html(php_table_data);
+                $("#add-car-form")[0].reset();
+
+
+                });
+
+            }); //add car code ends
+
+        }); //document ready function
+
+    </script>
+
+    <div id="container" class="col-xs-6 col-xs-offset-3">
+        <div class="row">
+            <h2>Search Database</h2>
+            <input class="form-control" type="text" name="search" id="search" placeholder="Search here...">
+            <br>
+            <br>
+            <h3 class="bg-success" id="result"></h3>
+        </div>
+
+        <div class="row">
+            <form id="add-car-form" method="post" action="add_car.php">
+                <div class="form-group">
+                    <label for="car-name">Add a new car</label>
+                    <input type="text" name="car_name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <input type="submit" class="btn btn-primary" value="Add car">
+                </div>
+            </form>
+            <div class="col-xs-6">
+                <div id="car-result"></div>
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-xs-6">
+
+                <table class="table">
+
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody id="show-cars">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="col-xs-6">
+                <div id="action-container">
+
+                </div>
+
+         </div> <!--   action-container-->
+        </div>
+    </div>
+
+</body>
+</html>
